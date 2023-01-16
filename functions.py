@@ -5,36 +5,26 @@ import gspread as gs
 import requests
 from plotnine import *
 from datetime import date
+import time
 import streamlit as st
+from nba_api.stats.endpoints import scoreboardv2
+from nba_api.stats.endpoints import commonteamroster
+from nba_api.stats.static import teams
 path = str(os.getcwd())
 current_date = date.today()
 cred = str(path) + '/creds.json'
 gc = gs.service_account(filename=cred)
 sh1 = gc.open('full_data')
 sh2 = gc.open('game_totals')
+sh3 = gc.open('todays_df')
 ws1 = sh1.worksheet('Sheet1')
 ws2 = sh2.worksheet('Sheet1')
+ws3 = sh3.worksheet('Sheet1')
 
-def prop_trend(player: str, player_id=None):
+def prop_trend(player_id=None):
     props = pd.DataFrame.from_dict(ws1.get_all_records())
     game_totals = pd.DataFrame.from_dict(ws2.get_all_records())
-
-    if player_id is None:
-        df = props[props['PLAYER_TXT'] == player].sort_values('DATE')
-
-        if len(df['PLAYER_ID'].unique()) == 1:
-            pass
-        else:
-            raise ValueError(f"""Your player seems to have a common name. 
-            See the below options for your player, then grab the corresponding PLAYER_ID and add it to the function.
-            {st.dataframe(df[['PLAYER_TXT', 'TEAM_NM', 'PLAYER_ID']].drop_duplicates().reset_index(drop=True))}""")
-            return
-
-    elif player_id is not None:
-        df = props[(props['PLAYER_TXT'] == player) & (props['PLAYER_ID'] == player_id)].sort_values('DATE')
-
-    else:
-        raise ValueError('oops,something else went wrong')
+    df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
 
     actnet_player_id = df['ACTNET_PLAYER_ID'].unique()[0]
 
@@ -66,10 +56,12 @@ def prop_trend(player: str, player_id=None):
         if r.json()['player_props']['core_bet_type_27_points'][i]['player_id'] == actnet_player_id:
             pts_prop = r.json()['player_props']['core_bet_type_27_points'][i]['odds']['15'][0]['value']
             break
-        # elif i == len(r.json()['player_props']['core_bet_type_27_points']) & r.json()['player_props']['core_bet_type_27_points'][i]['player_id'] != actnet_player_id:
-        #     raise ValueError(f"""Looks like your player doesn't have a prop tonight... yet.""")
         else:
             pass
+    if 'pts_prop' in locals():
+        pass
+    else:
+        return st.write("That player doesn't have a prop yet. Pick a different one.")
 
     df['PTS'] = df['PTS'].astype({'PTS': 'int32'})
     df['O_U_PROP'] = np.where(df['PTS'] > pts_prop, 'Over', 'Under')
@@ -93,3 +85,16 @@ def prop_trend(player: str, player_id=None):
          + geom_text(aes(x='DATE', y='PTS', label='PTS'), position=position_nudge(y=1), size=12))
     # + annotate("text", x=total+5, y=1.5, label=f"Current total {total}", angle=0, size=10, color="darkgreen", alpha=.7))
     return st.pyplot(ggplot.draw(p))
+
+def get_todays_df():
+    todays_df = pd.DataFrame.from_dict(ws3.get_all_records())
+    return todays_df
+
+def extract_id(df, user_input):
+    return df[df['PLAYER_AND_TM'] == user_input]['NBA_PLAYER_ID'].iloc[0]
+
+def plot_player():
+    todays_df = get_todays_df()
+    player = st.session_state['player_input']
+    player_id = extract_id(todays_df, player)
+    return prop_trend(player_id)
