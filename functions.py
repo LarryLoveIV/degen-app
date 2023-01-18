@@ -5,11 +5,7 @@ import gspread as gs
 import requests
 from plotnine import *
 from datetime import date
-import time
 import streamlit as st
-from nba_api.stats.endpoints import scoreboardv2
-from nba_api.stats.endpoints import commonteamroster
-from nba_api.stats.static import teams
 path = str(os.getcwd())
 current_date = date.today()
 cred = str(path) + '/creds.json'
