@@ -497,7 +497,7 @@ def combo_trend(player_id=None):
         return st.write("That player doesn't have a prop yet. Pick a different one.")
 
     df['PTS+REB+AST'] = df['PTS+REB+AST'].astype({'PTS+REB+AST': 'int32'})
-    df['O_U_PROP'] = np.where(df['PTS+REB+AST'] > fg3_prop, 'Over', 'Under')
+    df['O_U_PROP'] = np.where(df['PTS+REB+AST'] > com_prop, 'Over', 'Under')
 
     # total = r.json()['odds'][0]['total']
     name = df['PLAYER_TXT'].unique()
