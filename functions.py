@@ -566,4 +566,4 @@ def plot_com():
     todays_df = get_todays_df()
     player = st.session_state['player_input']
     player_id = extract_id(todays_df, player)
-    return com_trend(player_id)
+    return combo_trend(player_id)
