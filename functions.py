@@ -7,7 +7,6 @@ from plotnine import *
 from datetime import date
 import streamlit as st
 path = str(os.getcwd())
-current_date = date.today()
 cred = str(path) + '/creds.json'
 gc = gs.service_account(filename=cred)
 sh1 = gc.open('pts_df')
@@ -30,6 +29,7 @@ ws8 = sh8.worksheet('Sheet1')
 ws9 = sh9.worksheet('Sheet1')
 
 def pts_trend(player_id=None):
+    current_date = date.today()
     props = pd.DataFrame.from_dict(ws1.get_all_records())
     game_totals = pd.DataFrame.from_dict(ws8.get_all_records())
     df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
@@ -100,6 +100,7 @@ def pts_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def blk_trend(player_id=None):
+    current_date = date.today()
     props = pd.DataFrame.from_dict(ws2.get_all_records())
     game_totals = pd.DataFrame.from_dict(ws8.get_all_records())
     df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
@@ -170,6 +171,7 @@ def blk_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def ast_trend(player_id=None):
+    current_date = date.today()
     props = pd.DataFrame.from_dict(ws3.get_all_records())
     game_totals = pd.DataFrame.from_dict(ws8.get_all_records())
     df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
@@ -240,6 +242,7 @@ def ast_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def stl_trend(player_id=None):
+    current_date = date.today()
     props = pd.DataFrame.from_dict(ws4.get_all_records())
     game_totals = pd.DataFrame.from_dict(ws8.get_all_records())
     df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
@@ -310,6 +313,7 @@ def stl_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def reb_trend(player_id=None):
+    current_date = date.today()
     props = pd.DataFrame.from_dict(ws5.get_all_records())
     game_totals = pd.DataFrame.from_dict(ws8.get_all_records())
     df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
@@ -380,6 +384,7 @@ def reb_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def fg3_trend(player_id=None):
+    current_date = date.today()
     props = pd.DataFrame.from_dict(ws6.get_all_records())
     game_totals = pd.DataFrame.from_dict(ws8.get_all_records())
     df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
@@ -450,6 +455,7 @@ def fg3_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def combo_trend(player_id=None):
+    current_date = date.today()
     props = pd.DataFrame.from_dict(ws7.get_all_records())
     game_totals = pd.DataFrame.from_dict(ws8.get_all_records())
     df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
