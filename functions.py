@@ -70,7 +70,7 @@ def pts_trend(player_id=None):
 
     # Get ACTNET_TEAM_ID for player
     team_id = df.sort_values('DATE').iloc[-1]['ACTNET_TEAM_ID']
-    game_id = game_totals[(game_totals['DATE'] == str(current_date)) & (game_totals['ACTNET_TEAM_ID'] == team_id)]['ACTNET_GAME_ID'].iloc[0]
+    game_id = game_totals[(game_totals['DATE'] == current_date) & (game_totals['ACTNET_TEAM_ID'] == team_id)]['ACTNET_GAME_ID'].iloc[0]
 
     # get player prop
     url = 'https://api.actionnetwork.com/web/v1/games/' + str(game_id) + '/props'
