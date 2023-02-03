@@ -1,50 +1,37 @@
 import pandas as pd
 import numpy as np
-import os
+# import os
 import gspread as gs
 import requests
-from shillelagh.backends.apsw.db import connect
 from plotnine import *
 from datetime import date
 import streamlit as st
 # path = str(os.getcwd())
 # cred = str(path) + '/creds.json'
-# gc = gs.service_account(filename=cred)
-pts_url = st.secrets["pts_gsheets_url"]
-blk_url = st.secrets["blk_gsheets_url"]
-ast_url = st.secrets["ast_gsheets_url"]
-stl_url = st.secrets["stl_gsheets_url"]
-reb_url = st.secrets["reb_gsheets_url"]
-fg3_url = st.secrets["fg3_gsheets_url"]
-com_url = st.secrets["com_gsheets_url"]
-totals_url = st.secrets["totals_gsheets_url"]
-todays_df_url = st.secrets["todays_gsheets_url"]
-# sh1 = gc.open('pts_df')
-# sh2 = gc.open('blk_df')
-# sh3 = gc.open('ast_df')
-# sh4 = gc.open('stl_df')
-# sh5 = gc.open('reb_df')
-# sh6 = gc.open('fg3_df')
-# sh7 = gc.open('com_df')
-# sh8 = gc.open('game_totals')
-# sh9 = gc.open('todays_df')
-# ws1 = sh1.worksheet('Sheet1')
-# ws2 = sh2.worksheet('Sheet1')
-# ws3 = sh3.worksheet('Sheet1')
-# ws4 = sh4.worksheet('Sheet1')
-# ws5 = sh5.worksheet('Sheet1')
-# ws6 = sh6.worksheet('Sheet1')
-# ws7 = sh7.worksheet('Sheet1')
-# ws8 = sh8.worksheet('Sheet1')
-# ws9 = sh9.worksheet('Sheet1')
+gc = gs.service_account(filename=st.secrets["cred"])
+sh1 = gc.open('pts_df')
+sh2 = gc.open('blk_df')
+sh3 = gc.open('ast_df')
+sh4 = gc.open('stl_df')
+sh5 = gc.open('reb_df')
+sh6 = gc.open('fg3_df')
+sh7 = gc.open('com_df')
+sh8 = gc.open('game_totals')
+sh9 = gc.open('todays_df')
+ws1 = sh1.worksheet('Sheet1')
+ws2 = sh2.worksheet('Sheet1')
+ws3 = sh3.worksheet('Sheet1')
+ws4 = sh4.worksheet('Sheet1')
+ws5 = sh5.worksheet('Sheet1')
+ws6 = sh6.worksheet('Sheet1')
+ws7 = sh7.worksheet('Sheet1')
+ws8 = sh8.worksheet('Sheet1')
+ws9 = sh9.worksheet('Sheet1')
 
 def pts_trend(player_id=None):
-    conn = connect(":memory:")
     current_date = date.today()
-    query = conn.execute(f"""SELECT * FROM '{pts_url}' """)
-    props = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
-    game_query = conn.execute(f"""SELECT * FROM '{totals_url}' """)
-    game_totals = pd.DataFrame(game_query.fetchall(), columns=[i[0] for i in game_query.description])
+    props = pd.DataFrame.from_dict(ws1.get_all_records())
+    game_totals = pd.DataFrame.from_dict(ws8.get_all_records())
     df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
 
     if len(df) == 0:
@@ -70,7 +57,8 @@ def pts_trend(player_id=None):
 
     # Get ACTNET_TEAM_ID for player
     team_id = df.sort_values('DATE').iloc[-1]['ACTNET_TEAM_ID']
-    game_id = game_totals[(game_totals['DATE'] == current_date) & (game_totals['ACTNET_TEAM_ID'] == team_id)]['ACTNET_GAME_ID'].iloc[0]
+    game_id = game_totals[(game_totals['DATE'] == str(current_date)) & (game_totals['ACTNET_TEAM_ID'] == team_id)][
+        'ACTNET_GAME_ID'].iloc[0]
 
     # get player prop
     url = 'https://api.actionnetwork.com/web/v1/games/' + str(game_id) + '/props'
@@ -112,12 +100,9 @@ def pts_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def blk_trend(player_id=None):
-    conn = connect(":memory:")
     current_date = date.today()
-    query = conn.execute(f"""SELECT * FROM '{blk_url}' """)
-    props = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
-    game_query = conn.execute(f"""SELECT * FROM '{totals_url}' """)
-    game_totals = pd.DataFrame(game_query.fetchall(), columns=[i[0] for i in game_query.description])
+    props = pd.DataFrame.from_dict(ws2.get_all_records())
+    game_totals = pd.DataFrame.from_dict(ws8.get_all_records())
     df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
 
     if len(df) == 0:
@@ -143,7 +128,7 @@ def blk_trend(player_id=None):
 
     # Get ACTNET_TEAM_ID for player
     team_id = df.sort_values('DATE').iloc[-1]['ACTNET_TEAM_ID']
-    game_id = game_totals[(game_totals['DATE'] == current_date) & (game_totals['ACTNET_TEAM_ID'] == team_id)][
+    game_id = game_totals[(game_totals['DATE'] == str(current_date)) & (game_totals['ACTNET_TEAM_ID'] == team_id)][
         'ACTNET_GAME_ID'].iloc[0]
 
     # get player prop
@@ -186,12 +171,9 @@ def blk_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def ast_trend(player_id=None):
-    conn = connect(":memory:")
     current_date = date.today()
-    query = conn.execute(f"""SELECT * FROM '{ast_url}' """)
-    props = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
-    game_query = conn.execute(f"""SELECT * FROM '{totals_url}' """)
-    game_totals = pd.DataFrame(game_query.fetchall(), columns=[i[0] for i in game_query.description])
+    props = pd.DataFrame.from_dict(ws3.get_all_records())
+    game_totals = pd.DataFrame.from_dict(ws8.get_all_records())
     df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
 
     if len(df) == 0:
@@ -217,7 +199,7 @@ def ast_trend(player_id=None):
 
     # Get ACTNET_TEAM_ID for player
     team_id = df.sort_values('DATE').iloc[-1]['ACTNET_TEAM_ID']
-    game_id = game_totals[(game_totals['DATE'] == current_date) & (game_totals['ACTNET_TEAM_ID'] == team_id)][
+    game_id = game_totals[(game_totals['DATE'] == str(current_date)) & (game_totals['ACTNET_TEAM_ID'] == team_id)][
         'ACTNET_GAME_ID'].iloc[0]
 
     # get player prop
@@ -260,12 +242,9 @@ def ast_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def stl_trend(player_id=None):
-    conn = connect(":memory:")
     current_date = date.today()
-    query = conn.execute(f"""SELECT * FROM '{stl_url}' """)
-    props = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
-    game_query = conn.execute(f"""SELECT * FROM '{totals_url}' """)
-    game_totals = pd.DataFrame(game_query.fetchall(), columns=[i[0] for i in game_query.description])
+    props = pd.DataFrame.from_dict(ws4.get_all_records())
+    game_totals = pd.DataFrame.from_dict(ws8.get_all_records())
     df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
 
     if len(df) == 0:
@@ -291,7 +270,7 @@ def stl_trend(player_id=None):
 
     # Get ACTNET_TEAM_ID for player
     team_id = df.sort_values('DATE').iloc[-1]['ACTNET_TEAM_ID']
-    game_id = game_totals[(game_totals['DATE'] == current_date) & (game_totals['ACTNET_TEAM_ID'] == team_id)][
+    game_id = game_totals[(game_totals['DATE'] == str(current_date)) & (game_totals['ACTNET_TEAM_ID'] == team_id)][
         'ACTNET_GAME_ID'].iloc[0]
 
     # get player prop
@@ -334,12 +313,9 @@ def stl_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def reb_trend(player_id=None):
-    conn = connect(":memory:")
     current_date = date.today()
-    query = conn.execute(f"""SELECT * FROM '{reb_url}' """)
-    props = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
-    game_query = conn.execute(f"""SELECT * FROM '{totals_url}' """)
-    game_totals = pd.DataFrame(game_query.fetchall(), columns=[i[0] for i in game_query.description])
+    props = pd.DataFrame.from_dict(ws5.get_all_records())
+    game_totals = pd.DataFrame.from_dict(ws8.get_all_records())
     df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
 
     if len(df) == 0:
@@ -365,7 +341,7 @@ def reb_trend(player_id=None):
 
     # Get ACTNET_TEAM_ID for player
     team_id = df.sort_values('DATE').iloc[-1]['ACTNET_TEAM_ID']
-    game_id = game_totals[(game_totals['DATE'] == current_date) & (game_totals['ACTNET_TEAM_ID'] == team_id)][
+    game_id = game_totals[(game_totals['DATE'] == str(current_date)) & (game_totals['ACTNET_TEAM_ID'] == team_id)][
         'ACTNET_GAME_ID'].iloc[0]
 
     # get player prop
@@ -408,12 +384,9 @@ def reb_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def fg3_trend(player_id=None):
-    conn = connect(":memory:")
     current_date = date.today()
-    query = conn.execute(f"""SELECT * FROM '{fg3_url}' """)
-    props = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
-    game_query = conn.execute(f"""SELECT * FROM '{totals_url}' """)
-    game_totals = pd.DataFrame(game_query.fetchall(), columns=[i[0] for i in game_query.description])
+    props = pd.DataFrame.from_dict(ws6.get_all_records())
+    game_totals = pd.DataFrame.from_dict(ws8.get_all_records())
     df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
 
     if len(df) == 0:
@@ -439,7 +412,7 @@ def fg3_trend(player_id=None):
 
     # Get ACTNET_TEAM_ID for player
     team_id = df.sort_values('DATE').iloc[-1]['ACTNET_TEAM_ID']
-    game_id = game_totals[(game_totals['DATE'] == current_date) & (game_totals['ACTNET_TEAM_ID'] == team_id)][
+    game_id = game_totals[(game_totals['DATE'] == str(current_date)) & (game_totals['ACTNET_TEAM_ID'] == team_id)][
         'ACTNET_GAME_ID'].iloc[0]
 
     # get player prop
@@ -482,12 +455,9 @@ def fg3_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def combo_trend(player_id=None):
-    conn = connect(":memory:")
     current_date = date.today()
-    query = conn.execute(f"""SELECT * FROM '{com_url}' """)
-    props = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
-    game_query = conn.execute(f"""SELECT * FROM '{totals_url}' """)
-    game_totals = pd.DataFrame(game_query.fetchall(), columns=[i[0] for i in game_query.description])
+    props = pd.DataFrame.from_dict(ws7.get_all_records())
+    game_totals = pd.DataFrame.from_dict(ws8.get_all_records())
     df = props[props['PLAYER_ID'] == player_id].sort_values('DATE')
 
     if len(df) == 0:
@@ -513,7 +483,7 @@ def combo_trend(player_id=None):
 
     # Get ACTNET_TEAM_ID for player
     team_id = df.sort_values('DATE').iloc[-1]['ACTNET_TEAM_ID']
-    game_id = game_totals[(game_totals['DATE'] == current_date) & (game_totals['ACTNET_TEAM_ID'] == team_id)][
+    game_id = game_totals[(game_totals['DATE'] == str(current_date)) & (game_totals['ACTNET_TEAM_ID'] == team_id)][
         'ACTNET_GAME_ID'].iloc[0]
 
     # get player prop
@@ -556,9 +526,7 @@ def combo_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def get_todays_df():
-    conn = connect(":memory:")
-    query = conn.execute(f"""SELECT * FROM '{todays_df_url}' """)
-    todays_df = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
+    todays_df = pd.DataFrame.from_dict(ws9.get_all_records())
     return todays_df
 
 def extract_id(df, user_input):
