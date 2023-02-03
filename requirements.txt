@@ -2,7 +2,7 @@ altair==4.2.0
 appdirs==1.4.4
 apsw==3.40.1.0
 astroid==2.14.1
-attrs==22.2.0
+attrs==21.2.0
 beautifulsoup4==4.11.2
 blinker==1.5
 boto3==1.26.62
