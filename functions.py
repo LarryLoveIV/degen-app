@@ -8,7 +8,7 @@ from datetime import date
 import streamlit as st
 # path = str(os.getcwd())
 # cred = str(path) + '/creds.json'
-gc = gs.service_account(filename=st.secrets["cred"])
+gc = gs.service_account_from_dict(st.secrets.cred)
 sh1 = gc.open('pts_df')
 sh2 = gc.open('blk_df')
 sh3 = gc.open('ast_df')
