@@ -7,10 +7,9 @@ from shillelagh.backends.apsw.db import connect
 from plotnine import *
 from datetime import date
 import streamlit as st
-path = str(os.getcwd())
+# path = str(os.getcwd())
 # cred = str(path) + '/creds.json'
 # gc = gs.service_account(filename=cred)
-conn = connect(":memory:")
 pts_url = st.secrets["pts_gsheets_url"]
 blk_url = st.secrets["blk_gsheets_url"]
 ast_url = st.secrets["ast_gsheets_url"]
@@ -40,6 +39,7 @@ todays_df_url = st.secrets["todays_gsheets_url"]
 # ws9 = sh9.worksheet('Sheet1')
 
 def pts_trend(player_id=None):
+    conn = connect(":memory:")
     current_date = date.today()
     query = conn.execute(f"""SELECT * FROM '{pts_url}' """)
     props = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
@@ -112,6 +112,7 @@ def pts_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def blk_trend(player_id=None):
+    conn = connect(":memory:")
     current_date = date.today()
     query = conn.execute(f"""SELECT * FROM '{blk_url}' """)
     props = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
@@ -185,6 +186,7 @@ def blk_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def ast_trend(player_id=None):
+    conn = connect(":memory:")
     current_date = date.today()
     query = conn.execute(f"""SELECT * FROM '{ast_url}' """)
     props = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
@@ -258,6 +260,7 @@ def ast_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def stl_trend(player_id=None):
+    conn = connect(":memory:")
     current_date = date.today()
     query = conn.execute(f"""SELECT * FROM '{stl_url}' """)
     props = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
@@ -331,6 +334,7 @@ def stl_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def reb_trend(player_id=None):
+    conn = connect(":memory:")
     current_date = date.today()
     query = conn.execute(f"""SELECT * FROM '{reb_url}' """)
     props = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
@@ -404,6 +408,7 @@ def reb_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def fg3_trend(player_id=None):
+    conn = connect(":memory:")
     current_date = date.today()
     query = conn.execute(f"""SELECT * FROM '{fg3_url}' """)
     props = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
@@ -477,6 +482,7 @@ def fg3_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def combo_trend(player_id=None):
+    conn = connect(":memory:")
     current_date = date.today()
     query = conn.execute(f"""SELECT * FROM '{com_url}' """)
     props = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
@@ -550,6 +556,7 @@ def combo_trend(player_id=None):
     return st.pyplot(ggplot.draw(p))
 
 def get_todays_df():
+    conn = connect(":memory:")
     query = conn.execute(f"""SELECT * FROM '{todays_df_url}' """)
     todays_df = pd.DataFrame(query.fetchall(), columns=[i[0] for i in query.description])
     return todays_df
