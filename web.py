@@ -4,6 +4,12 @@ import functions as func
 todays_df = func.get_todays_df()
 
 st.title('Burholme Degen')
+st.write("""
+        Real quick: I'm still working on a proper error message
+        for when you select a player whose game doesn't have a prop sheet yet.
+        So, if the app breaks then you probably picked a player whose game has no props AT ALL. Just refresh
+        the page and try again closer to tip off - or pick a different player from a different game.
+        """)
 
 st.selectbox('Start typing a player name. Then, click the prop trend you want.', (todays_df['PLAYER_AND_TM']),
                       #on_change=func.plot_player,
